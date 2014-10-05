@@ -14,14 +14,14 @@ var parse = function(tokens){
     if (token == "(") {
         var list = [];
 
-        while (token != ")") {
+        while (tokens[0] != ")") {
             list.push(parse(tokens));
         }
 
         tokens.shift();  // pop off ")"
         return list;
     } else {
-        return token;   // return atom
+        return Number(token) || token;   // return atom
     }
 }
 
