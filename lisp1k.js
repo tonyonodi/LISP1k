@@ -1,23 +1,15 @@
 var evaluate = function(input){
     var lexed, parsed;
 
-    lexed = input.replace(/\(/g, " ( ").replace(/\)/g, " ) ").split(" ");
+    lexed = input.replace(/\(/g, " ( ").replace(/\)/g, " ) ").split(" ").filter(function(e){return e!=""});
     
-    parse(lexed)
+    console.log(parse(lexed));
 }
 
 var parse = function(tokens){
     
-    // remove all empty strings from array
-    var index = tokens.indexOf("");
-    while(index >= 0) {
-        console.log(tokens);
-        tokens.splice(index, 1);
-        index = tokens.indexOf("");
-    }
-
     // remove first token and save
-    var token = tokens.shift();
+    token = tokens.shift();
 
     if (token == "(") {
         var list = [];
