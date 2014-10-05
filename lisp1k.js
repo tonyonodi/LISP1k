@@ -3,30 +3,29 @@ var evaluate = function(input){
 
     lexed = input.replace(/\(/g, " ( ").replace(/\)/g, " ) ").split(" ");
     
-    console.log(input);
-    console.log(lexed);
-    console.log(parse(lexed));
+    parse(lexed)
 }
 
 var parse = function(tokens){
     
     // remove all empty strings from array
     var index = tokens.indexOf("");
-    while(index != -1) {
+    while(index >= 0) {
+        console.log(tokens);
         tokens.splice(index, 1);
         index = tokens.indexOf("");
     }
-    console.log(tokens);
 
     // remove first token and save
     var token = tokens.shift();
 
     if (token == "(") {
         var list = [];
-        console.log("loop happening")
+
         while (token != ")") {
-            list.push(parse(token));
+            list.push(parse(tokens));
         }
+
         tokens.shift();  // pop off ")"
         return list;
     } else {
