@@ -1,9 +1,9 @@
 var evaluate = function(input){
-    var lexed, parsed;
+    var lexed;
 
     lexed = input.replace(/\(/g, " ( ").replace(/\)/g, " ) ").split(" ").filter(function(e){return e!=""});
     
-    console.log(parse(lexed));
+    console.log(eval(parse(lexed)));
 }
 
 var parse = function(tokens){
@@ -25,9 +25,21 @@ var parse = function(tokens){
     }
 }
 
+var eval = function(expression) {
+    if(Array.isArray(expression)) {
+        var fn = expression.shift();
+
+        return fns[fn].apply(expression.map(eval));
+    }
+    return expression   // just return if atomic
+}
+
 var output = function(i) {
     document.writeln("<br>"+i)
 }
+
+var fns = {};
+fns['*'] = function(input) {return input[0] * input[1]}
 
 while(1) {
     I = window.prompt(">>>");
