@@ -31,7 +31,7 @@ var eval = function(expression) {
 
         return fns[fn](expression.map(eval));
     }
-    return expression   // just return if atomic
+    return env[expression] || expression   // just return if atomic
 }
 
 var output = function(i) {
@@ -39,10 +39,14 @@ var output = function(i) {
 }
 
 var fns = {};
+var env = {};    // keep variables in this object
+
 fns['+'] = function(input) {return input[0] + input[1]};
 fns['-'] = function(input) {return input[0] - input[1]};
 fns['*'] = function(input) {return input[0] * input[1]};
 fns['/'] = function(input) {return input[0] / input[1]};
+
+fns['def'] = function(input) { return env[input[0]] =  input[1] };
 
 while(1) {
     I = window.prompt(">>>");
