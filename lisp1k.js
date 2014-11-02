@@ -39,10 +39,10 @@ var output = function(i) {
 }
 
 var fns = {};
-fns['+'] = function(input) {return input[0] + input[1]}
-fns['-'] = function(input) {return input[0] - input[1]}
-fns['*'] = function(input) {return input[0] * input[1]}
-fns['/'] = function(input) {return input[0] / input[1]}
+fns['+'] = function(input) {return input[0] + input[1]};
+fns['-'] = function(input) {return input[0] - input[1]};
+fns['*'] = function(input) {return input[0] * input[1]};
+fns['/'] = function(input) {return input[0] / input[1]};
 
 while(1) {
     I = window.prompt(">>>");
