@@ -47,6 +47,7 @@ fns['*'] = function(input) {return input[0] * input[1]};
 fns['/'] = function(input) {return input[0] / input[1]};
 
 fns['def'] = function(input) { return env[input[0]] =  input[1] };
+fns['if'] = function(input) {return input[0] ? input[1] : input[2]}
 
 while(1) {
     I = window.prompt(">>>");
