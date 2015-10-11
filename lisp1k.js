@@ -30,7 +30,9 @@ var primitiveFuncEval = function(func, args, env) {
     delayArgEvaluation = func.delayArgEvaluation;
     funcBody = func.body;
     if (delayArgEvaluation) {
-        return funcBody(args);
+        // if arg evaluation is delayed function will
+        // probably need env for when they are evaled
+        return funcBody(args, env);
     } else {
         appliedArgs = apply(args, env)
         return funcBody(appliedArgs);
@@ -54,11 +56,19 @@ var lispEval = function(expression, env) {
     var fnName,
         fnObject,
         args,
-        isAtomic;
+        isAtomic,
+        valueFromEnv;
 
     isAtomic = ! Array.isArray(expression);
     if (isAtomic) {
-        return env[expression] || expression;   // just return if atomic
+        // Be aware that env[expression] || expression
+        // will return the string "false" for "false".
+        valueFromEnv = env[expression];
+        if (valueFromEnv !== undefined) {
+            return valueFromEnv;
+        } else {
+            return expression;
+        }
     } else {
         fnName = expression.shift();
         fnObject = env[fnName];
@@ -102,6 +112,10 @@ var repl = function(env) {
 
 var env = {};
 
+env["true"] = true;
+env["false"] = false;
+env["nil"] = null;
+
 env["+"] = {
     body: function(input) {
         return input[0] + input[1];
@@ -144,16 +158,33 @@ env["def"] = {
 }
 
 env["if"] = {
-    body: function(input) {
-        return input[0] ? lispEval(input[1]) : lispEval(input[2]);
+    body: function(input, env) {
+        var condition,
+            evaluatedCondition,
+            trueExpression,
+            falseExpression,
+            conditionIsFalsey,
+            returnValue;
+
+        condition = input[0];
+        trueExpression = input[1];
+        falseExpression = input[2];
+        evaluatedCondition = lispEval(condition, env);
+        console.log("evaluatedCondition type");
+        console.log(typeof evaluatedCondition);
+        conditionIsFalsey = ((evaluatedCondition === false) || (evaluatedCondition === null));
+        returnValue = conditionIsFalsey ? lispEval(falseExpression, env) : 
+                                          lispEval(trueExpression, env);
+
+        return returnValue;
     },
     isPrimitive: true,
     delayArgEvaluation: true,
-    delayArgEvaluation: false
+    delayArgEvaluation: true
 }
 
 env["fn"] = {
-    body: function(input) {
+    body: function(input, env) {
         return {
             args: input[0],
             body: input[1],
