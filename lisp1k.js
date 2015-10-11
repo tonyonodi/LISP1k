@@ -148,6 +148,13 @@ env["/"] = {
     delayArgEvaluation: false
 }
 
+env["="] = {
+    body: function(input) {
+        return input[0] === input[1];
+    },
+    isPrimitive: true,
+    delayArgEvaluation: false
+}
 
 env["def"] = {
     body: function(input) {
