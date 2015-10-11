@@ -1,15 +1,6 @@
-var evaluate = function(input){
-    var lexed;
-
-    lexed = input.replace(/\(/g, " ( ").replace(/\)/g, " ) ").split(" ").filter(function(e){return e!=""});
-    
-    return eval(parse(lexed));
-}
-
-var parse = function(tokens){
-    
+var parse = function(tokens) {
     // remove first token and save
-    token = tokens.shift();
+    var token = tokens.shift();
 
     if (token == "(") {
         var list = [];
@@ -25,34 +16,155 @@ var parse = function(tokens){
     }
 }
 
-var eval = function(expression) {
-    if(Array.isArray(expression)) {
-        var fn = expression.shift();
+var apply = function(arguments, env) {
+    return arguments.map(function(term) {
+        return lispEval(term, env);
+    });
+}
 
-        return fns[fn](expression.map(eval));
+var primitiveFuncEval = function(func, args, env) {
+    var delayArgEvaluation,
+        appliedArgs,
+        funcBody;
+
+    delayArgEvaluation = func.delayArgEvaluation;
+    funcBody = func.body;
+    if (delayArgEvaluation) {
+        return funcBody(args);
+    } else {
+        appliedArgs = apply(args, env)
+        return funcBody(appliedArgs);
     }
-    return env[expression] || expression   // just return if atomic
 }
 
-var output = function(i) {
-    document.writeln("<br>"+i)
+var nonPrimitiveFuncEval = function(func, args, env) {
+    var newFuncEnv;
+    
+    newFuncEnv = Object.create(env);
+    
+    // append the arguments to the function's environment
+    func.args.forEach(function(argName, i) {
+        newFuncEnv[argName] = args[i];
+    }, args);
+
+    return lispEval(func.body, newFuncEnv)
 }
 
-var fns = {};
-var env = {};    // keep variables in this object
+var lispEval = function(expression, env) {
+    var fnName,
+        fnObject,
+        args,
+        isAtomic;
 
-fns['+'] = function(input) {return input[0] + input[1]};
-fns['-'] = function(input) {return input[0] - input[1]};
-fns['*'] = function(input) {return input[0] * input[1]};
-fns['/'] = function(input) {return input[0] / input[1]};
+    isAtomic = ! Array.isArray(expression);
+    if (isAtomic) {
+        return env[expression] || expression;   // just return if atomic
+    } else {
+        fnName = expression.shift();
+        fnObject = env[fnName];
 
-fns['def'] = function(input) { return env[input[0]] =  input[1] };
-fns['if'] = function(input) {return input[0] ? input[1] : input[2]}
-
-while(1) {
-    I = window.prompt(">>>");
-    output(">"+I);   // output command
-    output(evaluate(I)) // output evaluated command
+        if (fnObject.isPrimitive === true) {
+            return primitiveFuncEval(fnObject, expression, env);
+        } else if (fnObject.isPrimitive === false) {
+            // use apply on args as there is no reason to delay
+            // application for args in non-primitive functions
+            args = apply(expression, env);
+            return nonPrimitiveFuncEval(fnObject, args, env);
+        } else {
+            throw fnName + " is not a function";
+        }
+    }
 }
+
+var repl = function(env) {
+    var lexed,
+        parsed,
+        evaluated;
+
+    while(1) {
+        input = window.prompt(">>>");
+        document.writeln("<br>> " + input);   // output command
+
+        lexed = input.replace(/\(/g, " ( ")
+                     .replace(/\)/g, " ) ")
+                     .split(" ")
+                     .filter(function(e) {
+                        return e != "";
+                     });
+
+        parsed = parse(lexed)
+
+        evaluated = lispEval(parsed, env)
+        
+        document.writeln("<br>" + evaluated);
+    }
+}
+
+var env = {};
+
+env["+"] = {
+    body: function(input) {
+        return input[0] + input[1];
+    },
+    isPrimitive: true,
+    delayArgEvaluation: false
+}
+
+env["-"] = {
+    body: function(input) {
+        return input[0] - input[1];
+    },
+    isPrimitive: true,
+    delayArgEvaluation: false
+}
+
+env["*"] = {
+    body: function(input) {
+        return input[0] * input[1];
+    },
+    isPrimitive: true,
+    delayArgEvaluation: false
+}
+
+env["/"] = {
+    body: function(input) {
+        return input[0] / input[1];
+    },
+    isPrimitive: true,
+    delayArgEvaluation: false
+}
+
+
+env["def"] = {
+    body: function(input) {
+        return env[input[0]] = input[1];
+    },
+    isPrimitive: true,
+    delayArgEvaluation: false
+}
+
+env["if"] = {
+    body: function(input) {
+        return input[0] ? lispEval(input[1]) : lispEval(input[2]);
+    },
+    isPrimitive: true,
+    delayArgEvaluation: true,
+    delayArgEvaluation: false
+}
+
+env["fn"] = {
+    body: function(input) {
+        return {
+            args: input[0],
+            body: input[1],
+            isPrimitive: false,
+            delayArgEvaluation: false
+        }
+    },
+    isPrimitive: true,
+    delayArgEvaluation: true
+}
+
+repl(env);
 
 
