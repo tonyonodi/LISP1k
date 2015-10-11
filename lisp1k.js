@@ -1,18 +1,34 @@
-var parse = function(tokens) {
-    // remove first token and save
-    var token = tokens.shift();
+var lex = function(string) {
+    return string.replace(/\(/g, " ( ")
+                 .replace(/\)/g, " ) ")
+                 .split(" ")
+                 .filter(function(token) {
+                    return token !== "";
+                 });
+}
 
-    if (token == "(") {
+var parse = function(tokens) {
+    var token,
+        tokenAsNumber;
+    // remove first token and save
+    token = tokens.shift();
+
+    if (token === "(") {
         var list = [];
 
-        while (tokens[0] != ")") {
+        while (tokens[0] !== ")") {
             list.push(parse(tokens));
         }
 
         tokens.shift();  // pop off ")"
         return list;
     } else {
-        return Number(token) || token;   // return atom
+        tokenAsNumber = Number(token);
+        if (Number.isNaN(tokenAsNumber)) {
+            return token;   // return atom
+        } else {
+            return tokenAsNumber;
+        }
     }
 }
 
@@ -70,15 +86,16 @@ var lispEval = function(expression, env) {
             return expression;
         }
     } else {
-        fnName = expression.shift();
+        fnName = expression[0];
+        args = expression.slice(1);
         fnObject = env[fnName];
 
         if (fnObject.isPrimitive === true) {
-            return primitiveFuncEval(fnObject, expression, env);
+            return primitiveFuncEval(fnObject, args, env);
         } else if (fnObject.isPrimitive === false) {
             // use apply on args as there is no reason to delay
             // application for args in non-primitive functions
-            args = apply(expression, env);
+            args = apply(args, env);
             return nonPrimitiveFuncEval(fnObject, args, env);
         } else {
             throw fnName + " is not a function";
@@ -95,12 +112,7 @@ var repl = function(env) {
         input = window.prompt(">>>");
         document.writeln("<br>> " + input);   // output command
 
-        lexed = input.replace(/\(/g, " ( ")
-                     .replace(/\)/g, " ) ")
-                     .split(" ")
-                     .filter(function(e) {
-                        return e != "";
-                     });
+        lexed = lex(input)
 
         parsed = parse(lexed)
 
@@ -163,7 +175,7 @@ env["def"] = {
     isPrimitive: true,
     delayArgEvaluation: false
 }
-
+count = 0;
 env["if"] = {
     body: function(input, env) {
         var condition,
@@ -177,9 +189,10 @@ env["if"] = {
         trueExpression = input[1];
         falseExpression = input[2];
         evaluatedCondition = lispEval(condition, env);
-        console.log("evaluatedCondition type");
-        console.log(typeof evaluatedCondition);
         conditionIsFalsey = ((evaluatedCondition === false) || (evaluatedCondition === null));
+        count++;
+        if (count > 10) throw "stack size exceeded";
+        console.log(evaluatedCondition);
         returnValue = conditionIsFalsey ? lispEval(falseExpression, env) : 
                                           lispEval(trueExpression, env);
 
