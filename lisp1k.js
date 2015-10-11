@@ -130,7 +130,9 @@ env["nil"] = null;
 
 env["+"] = {
     body: function(input) {
-        return input[0] + input[1];
+        return input.reduce(function(prev, curr) {
+            return prev + curr;
+        }, 0);
     },
     isPrimitive: true,
     delayArgEvaluation: false
@@ -138,7 +140,11 @@ env["+"] = {
 
 env["-"] = {
     body: function(input) {
-        return input[0] - input[1];
+        var first;
+        first = input.shift();
+        return input.reduce(function(prev, curr) {
+            return prev - curr;
+        }, first);
     },
     isPrimitive: true,
     delayArgEvaluation: false
@@ -146,7 +152,9 @@ env["-"] = {
 
 env["*"] = {
     body: function(input) {
-        return input[0] * input[1];
+        return input.reduce(function(prev, curr) {
+            return prev * curr;
+        }, 0);
     },
     isPrimitive: true,
     delayArgEvaluation: false
@@ -154,7 +162,11 @@ env["*"] = {
 
 env["/"] = {
     body: function(input) {
-        return input[0] / input[1];
+        var first;
+        first = input.shift();
+        return input.reduce(function(prev, curr) {
+            return prev / curr;
+        }, first);
     },
     isPrimitive: true,
     delayArgEvaluation: false
@@ -162,7 +174,11 @@ env["/"] = {
 
 env["="] = {
     body: function(input) {
-        return input[0] === input[1];
+        var first;
+        first = input.shift();
+        return input.every(function(value) {
+            return value === first;
+        });
     },
     isPrimitive: true,
     delayArgEvaluation: false
@@ -175,7 +191,7 @@ env["def"] = {
     isPrimitive: true,
     delayArgEvaluation: false
 }
-count = 0;
+
 env["if"] = {
     body: function(input, env) {
         var condition,
@@ -190,9 +206,6 @@ env["if"] = {
         falseExpression = input[2];
         evaluatedCondition = lispEval(condition, env);
         conditionIsFalsey = ((evaluatedCondition === false) || (evaluatedCondition === null));
-        count++;
-        if (count > 10) throw "stack size exceeded";
-        console.log(evaluatedCondition);
         returnValue = conditionIsFalsey ? lispEval(falseExpression, env) : 
                                           lispEval(trueExpression, env);
 
