@@ -17,10 +17,10 @@
   outline: 0;
 }
 
-#lisp-repl .input-form form {
-  display: inline;
-  float: right;
-  width: 100%;
+#lisp-repl .input-form form label {
+  float: left;
+  width: 35px;
+  margin-left: -35px;
 }
 
 #lisp-repl .input-form form input {
@@ -32,10 +32,14 @@
   list-style-type: none;
 }
 
-#lisp-repl li.input {}
+#lisp-repl li.input {
+  margin-left: -35px;
+}
 
 #lisp-repl li.input:before {
   content: ">>> ";
 }
 
-#lisp-repl li.output {}
+#lisp-repl li.output {
+  margin-left: -35px;
+}
