@@ -116,7 +116,7 @@ var Lisp = (function() {
     that = this;
 
     that.env = new Env;
-    parentElement.append("<ul id=\"lisp-repl\"><li><form><input type=\"text\" autofocus></form></li></ul>");
+    parentElement.append("<ul id=\"lisp-repl\"><li class=\"input-form\"><form><label>&gt;&gt;&gt;&nbsp;</label><input type=\"text\" autofocus></form></li></ul>");
     that.container = parentElement.find("ul");
     lastListItem = that.container.find("li").last();
     form = lastListItem.find("form");
@@ -135,7 +135,8 @@ var Lisp = (function() {
       lexed = Lisp.lex(submitted);
       parsed = Lisp.parse(lexed);
       evaluated = Lisp.eval(parsed, that.env);
-      $("<li>" + evaluated + "</li>").insertBefore(lastListItem);
+      $("<li class=\"input\">" + submitted + "</li>").insertBefore(lastListItem);
+      $("<li class=\"output\">" + evaluated + "</li>").insertBefore(lastListItem);
       inputElement.val("");
     });
   }
