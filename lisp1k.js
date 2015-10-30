@@ -1,9 +1,9 @@
 "use strict";
 
 var Lisp = (function() {
-  var Lisp = Object.create(null);
+  var self = Object.create(null);
 
-  Lisp.lex = function(string) {
+  self.lex = function(string) {
     return string.replace(/\(/g, " ( ")
                  .replace(/\)/g, " ) ")
                  .split(" ")
@@ -12,7 +12,7 @@ var Lisp = (function() {
                  });
   }
 
-  Lisp.parse = function(tokens) {
+  self.parse = function(tokens) {
     var token,
         tokenAsNumber;
     // remove first token and save
@@ -22,7 +22,7 @@ var Lisp = (function() {
       var list = [];
 
       while (tokens[0] !== ")") {
-        list.push(Lisp.parse(tokens));
+        list.push(self.parse(tokens));
       }
 
       tokens.shift();  // pop off ")"
@@ -37,9 +37,9 @@ var Lisp = (function() {
     }
   }
 
-  Lisp.apply = function(args, env) {
+  self.apply = function(args, env) {
     return args.map(function(term) {
-      return Lisp.eval(term, env);
+      return self.eval(term, env);
     });
   }
 
@@ -55,7 +55,7 @@ var Lisp = (function() {
       // probably need env for when they are evaled
       return funcBody(args, env);
     } else {
-      appliedArgs = Lisp.apply(args, env)
+      appliedArgs = self.apply(args, env)
       return funcBody(appliedArgs);
     }
   }
@@ -70,10 +70,10 @@ var Lisp = (function() {
       newFuncEnv[argName] = args[i];
     }, args);
 
-    return Lisp.eval(func.body, newFuncEnv)
+    return self.eval(func.body, newFuncEnv)
   }
 
-  Lisp.eval = function(expression, env) {
+  self.eval = function(expression, env) {
     var fnName,
       fnObject,
       args,
@@ -100,7 +100,7 @@ var Lisp = (function() {
       } else if (fnObject.isPrimitive === false) {
         // use apply on args as there is no reason to delay
         // application for args in non-primitive functions
-        args = Lisp.apply(args, env);
+        args = self.apply(args, env);
         return nonPrimitiveFuncEval(fnObject, args, env);
       } else {
         throw fnName + " is not a function";
@@ -108,7 +108,7 @@ var Lisp = (function() {
     }
   }
 
-  Lisp.repl = function(parentElement) {
+  self.repl = function(parentElement) {
     var lastListItem,
       form,
       that;
@@ -132,9 +132,9 @@ var Lisp = (function() {
       inputElement = $(event.target).find("input");
       submitted = inputElement.val();
 
-      lexed = Lisp.lex(submitted);
-      parsed = Lisp.parse(lexed);
-      evaluated = Lisp.eval(parsed, that.env);
+      lexed = self.lex(submitted);
+      parsed = self.parse(lexed);
+      evaluated = self.eval(parsed, that.env);
       $("<li class=\"input\">" + submitted + "</li>").insertBefore(lastListItem);
       $("<li class=\"output\">" + evaluated + "</li>").insertBefore(lastListItem);
       inputElement.val("");
@@ -224,10 +224,10 @@ var Lisp = (function() {
         condition = input[0];
         trueExpression = input[1];
         falseExpression = input[2];
-        evaluatedCondition = Lisp.eval(condition, that);
+        evaluatedCondition = self.eval(condition, that);
         conditionIsFalsey = ((evaluatedCondition === false) || (evaluatedCondition === null));
-        returnValue = conditionIsFalsey ? Lisp.eval(falseExpression, that) :
-                                          Lisp.eval(trueExpression, that);
+        returnValue = conditionIsFalsey ? self.eval(falseExpression, that) :
+                                          self.eval(trueExpression, that);
 
         return returnValue;
       },
@@ -250,5 +250,5 @@ var Lisp = (function() {
     }
   }
 
-  return Lisp;
+  return self;
 })();
