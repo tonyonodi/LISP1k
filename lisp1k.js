@@ -6,7 +6,7 @@ var Lisp = (function() {
   self.lex = function(string) {
     return string.replace(/\(/g, " ( ")
                  .replace(/\)/g, " ) ")
-                 .split(" ")
+                 .split(/\s/)
                  .filter(function(token) {
                     return token !== "";
                  });
