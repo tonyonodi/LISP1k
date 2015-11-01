@@ -1,42 +1,7 @@
 "use strict";
 
 var Lisp = (function() {
-  var self = function(parentElement) {
-
-    this.env = new Env;
-
-    if (parentElement) {
-      parentElement.append("<ul id=\"lisp-repl\"><li class=\"input-form\"><form><label>&gt;&gt;&gt;&nbsp;</label><input type=\"text\" autofocus></form></li></ul>");
-      this.container = parentElement.find("ul");
-      lastListItem = that.container.find("li").last();
-      form = lastListItem.find("form");
-    }
-  }
-
-  self.repl = function(parentElement) {
-    var lastListItem,
-      form,
-      that;
-
-    form.submit(function(event) {
-      var inputElement,
-        submitted,
-        lexed,
-        parsed,
-        evaluated;
-
-      event.preventDefault();
-      inputElement = $(event.target).find("input");
-      submitted = inputElement.val();
-
-      lexed = self.lex(submitted);
-      parsed = self.parse(lexed);
-      evaluated = self.eval(parsed, that.env);
-      $("<li class=\"input\">" + submitted + "</li>").insertBefore(lastListItem);
-      $("<li class=\"output\">" + evaluated + "</li>").insertBefore(lastListItem);
-      inputElement.val("");
-    });
-  }
+  var self = Object.create(null);
 
   self.lex = function(string) {
     return string.replace(/\(/g, " ( ")
@@ -108,15 +73,12 @@ var Lisp = (function() {
     return self.eval(func.body, newFuncEnv)
   }
 
-  self.prototype.eval = function(expression) {
-    var env,
-      fnName,
+  self.eval = function(expression, env) {
+    var fnName,
       fnObject,
       args,
       isAtomic,
       valueFromEnv;
-
-    env = this.env;
 
     isAtomic = ! Array.isArray(expression);
     if (isAtomic) {
@@ -146,14 +108,45 @@ var Lisp = (function() {
     }
   }
 
-  var Env = function() {
-    var that = this;
+  self.repl = function(parentElement) {
+    var lastListItem,
+      form,
+      repl;
 
-    that["true"] = true;
-    that["false"] = false;
-    that["nil"] = null;
+    repl = this;
 
-    that["+"] = {
+    repl.env = Object.create(self.defaultEnv);
+    parentElement.append("<ul id=\"lisp-repl\"><li class=\"input-form\"><form><label>&gt;&gt;&gt;&nbsp;</label><input type=\"text\" autofocus></form></li></ul>");
+    repl.container = parentElement.find("ul");
+    lastListItem = repl.container.find("li").last();
+    form = lastListItem.find("form");
+
+    form.submit(function(event) {
+      var inputElement,
+        submitted,
+        lexed,
+        parsed,
+        evaluated;
+
+      event.preventDefault();
+      inputElement = $(event.target).find("input");
+      submitted = inputElement.val();
+
+      lexed = self.lex(submitted);
+      parsed = self.parse(lexed);
+      evaluated = self.eval(parsed, repl.env);
+      $("<li class=\"input\">" + submitted + "</li>").insertBefore(lastListItem);
+      $("<li class=\"output\">" + evaluated + "</li>").insertBefore(lastListItem);
+      inputElement.val("");
+    });
+  }
+
+
+  self.defaultEnv = {
+    "true": true,
+    "false": false,
+    "nil": null,
+    "+": {
       body: function(input) {
         return input.reduce(function(prev, curr) {
           return prev + curr;
@@ -161,9 +154,8 @@ var Lisp = (function() {
       },
       isPrimitive: true,
       delayArgEvaluation: false
-    }
-
-    that["-"] = {
+    },
+    "-": {
       body: function(input) {
         var first;
         first = input.shift();
@@ -173,9 +165,8 @@ var Lisp = (function() {
       },
       isPrimitive: true,
       delayArgEvaluation: false
-    }
-
-    that["*"] = {
+    },
+    "*": {
       body: function(input) {
         return input.reduce(function(prev, curr) {
           return prev * curr;
@@ -183,9 +174,8 @@ var Lisp = (function() {
       },
       isPrimitive: true,
       delayArgEvaluation: false
-    }
-
-    that["/"] = {
+    },
+    "/": {
       body: function(input) {
         var first;
         first = input.shift();
@@ -195,9 +185,8 @@ var Lisp = (function() {
       },
       isPrimitive: true,
       delayArgEvaluation: false
-    }
-
-    that["="] = {
+    },
+    "=": {
       body: function(input) {
         var first;
           first = input.shift();
@@ -207,17 +196,15 @@ var Lisp = (function() {
       },
       isPrimitive: true,
       delayArgEvaluation: false
-    }
-
-    that["def"] = {
+    },
+    "def": {
       body: function(input) {
         return that[input[0]] = input[1];
       },
       isPrimitive: true,
       delayArgEvaluation: false
-    }
-
-    that["if"] = {
+    },
+    "if": {
       body: function(input, env) {
         var condition,
           evaluatedCondition,
@@ -239,9 +226,8 @@ var Lisp = (function() {
       isPrimitive: true,
       delayArgEvaluation: true,
       delayArgEvaluation: true
-    }
-
-    that["fn"] = {
+    },
+    "fn": {
       body: function(input, env) {
         return {
           args: input[0],
