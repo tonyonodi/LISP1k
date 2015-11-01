@@ -1,7 +1,42 @@
 "use strict";
 
 var Lisp = (function() {
-  var self = Object.create(null);
+  var self = function(parentElement) {
+
+    this.env = new Env;
+
+    if (parentElement) {
+      parentElement.append("<ul id=\"lisp-repl\"><li class=\"input-form\"><form><label>&gt;&gt;&gt;&nbsp;</label><input type=\"text\" autofocus></form></li></ul>");
+      this.container = parentElement.find("ul");
+      lastListItem = that.container.find("li").last();
+      form = lastListItem.find("form");
+    }
+  }
+
+  self.repl = function(parentElement) {
+    var lastListItem,
+      form,
+      that;
+
+    form.submit(function(event) {
+      var inputElement,
+        submitted,
+        lexed,
+        parsed,
+        evaluated;
+
+      event.preventDefault();
+      inputElement = $(event.target).find("input");
+      submitted = inputElement.val();
+
+      lexed = self.lex(submitted);
+      parsed = self.parse(lexed);
+      evaluated = self.eval(parsed, that.env);
+      $("<li class=\"input\">" + submitted + "</li>").insertBefore(lastListItem);
+      $("<li class=\"output\">" + evaluated + "</li>").insertBefore(lastListItem);
+      inputElement.val("");
+    });
+  }
 
   self.lex = function(string) {
     return string.replace(/\(/g, " ( ")
@@ -73,12 +108,15 @@ var Lisp = (function() {
     return self.eval(func.body, newFuncEnv)
   }
 
-  self.eval = function(expression, env) {
-    var fnName,
+  self.prototype.eval = function(expression) {
+    var env,
+      fnName,
       fnObject,
       args,
       isAtomic,
       valueFromEnv;
+
+    env = this.env;
 
     isAtomic = ! Array.isArray(expression);
     if (isAtomic) {
@@ -106,39 +144,6 @@ var Lisp = (function() {
         throw fnName + " is not a function";
       }
     }
-  }
-
-  self.repl = function(parentElement) {
-    var lastListItem,
-      form,
-      that;
-
-    that = this;
-
-    that.env = new Env;
-    parentElement.append("<ul id=\"lisp-repl\"><li class=\"input-form\"><form><label>&gt;&gt;&gt;&nbsp;</label><input type=\"text\" autofocus></form></li></ul>");
-    that.container = parentElement.find("ul");
-    lastListItem = that.container.find("li").last();
-    form = lastListItem.find("form");
-
-    form.submit(function(event) {
-      var inputElement,
-        submitted,
-        lexed,
-        parsed,
-        evaluated;
-
-      event.preventDefault();
-      inputElement = $(event.target).find("input");
-      submitted = inputElement.val();
-
-      lexed = self.lex(submitted);
-      parsed = self.parse(lexed);
-      evaluated = self.eval(parsed, that.env);
-      $("<li class=\"input\">" + submitted + "</li>").insertBefore(lastListItem);
-      $("<li class=\"output\">" + evaluated + "</li>").insertBefore(lastListItem);
-      inputElement.val("");
-    });
   }
 
   var Env = function() {
