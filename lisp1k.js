@@ -73,38 +73,51 @@ var Lisp = (function() {
     return self.eval(func.body, newFuncEnv)
   }
 
-  self.eval = function(expression, env) {
-    var fnName,
-      fnObject,
-      args,
-      isAtomic,
-      valueFromEnv;
-
-    isAtomic = ! Array.isArray(expression);
-    if (isAtomic) {
-      // Be aware that env[expression] || expression
-      // will return the string "false" for "false".
-      valueFromEnv = env[expression];
-      if (valueFromEnv !== undefined) {
-        return valueFromEnv;
-      } else {
-        return expression;
-      }
+  var evaluateAtom = function(atom, env) {
+    // Be aware that env[expression] || expression
+    // will return the string "false" for "false".
+    if (atom in env) {
+      return env[atom];;
     } else {
-      fnName = expression[0];
-      args = expression.slice(1);
-      fnObject = env[fnName];
+      return atom;
+    }
+  }
 
-      if (fnObject.isPrimitive === true) {
-        return primitiveFuncEval(fnObject, args, env);
-      } else if (fnObject.isPrimitive === false) {
-        // use apply on args as there is no reason to delay
-        // application for args in non-primitive functions
-        args = self.apply(args, env);
-        return nonPrimitiveFuncEval(fnObject, args, env);
-      } else {
-        throw fnName + " is not a function";
-      }
+  var evaluateList = function(expression, env) {
+    var first,
+      fnObject,
+      args;
+
+    first = expression[0];
+    // if anonymous function evaluate to get fnObject
+    if (Array.isArray(first)) {
+      fnObject = self.eval(first, env);
+    } else if (typeof first === "string") {
+      fnObject = env[first];
+    } else {
+      throw first + " is not a function";
+    }
+
+    args = expression.slice(1);
+
+    if (fnObject.isPrimitive === true) {
+      return primitiveFuncEval(fnObject, args, env);
+    } else if (fnObject.isPrimitive === false) {
+      // use apply on args as there is no reason to delay
+      // application for args in non-primitive functions
+      args = self.apply(args, env);
+      return nonPrimitiveFuncEval(fnObject, args, env);
+    }
+  }
+
+  self.eval = function(expression, env) {
+    var isList;
+
+    isList = Array.isArray(expression);
+    if (isList) {
+      return evaluateList(expression, env);
+    } else {
+      return evaluateAtom(expression, env);
     }
   }
 

@@ -81,12 +81,12 @@ QUnit.test("Primitive function tests.", function(assert) {
   var savedVar = Lisp.eval("x", env);
   assert.equal(savedVar, 5, "Saving variables works.");
 
-  var fnNoArgs = Lisp.eval([["fn", [], 5]], env);
-  assert.equal(fnNoArgs, 5, "Evaluated anonymous function (no args)");
+  var anonFnNoArgs = Lisp.eval([["fn", [], 5]], env);
+  assert.equal(anonFnNoArgs, 5, "Evaluated anonymous function (no args)");
 
-  var fnOneArg = Lisp.eval([["fn", ["x"] ["+", "x", 1]], 5], env);
-  assert.equal(fnOneArg, 6, "Evaluated anonymous function (one arg).");
+  var anonFnOneArg = Lisp.eval([["fn", ["x"] ["+", "x", 1]], 5], env);
+  assert.equal(anonFnOneArg, 6, "Evaluated anonymous function (one arg).");
 
-  var fnTwoArgs = Lisp.eval([["fn", ["x"] ["+", "x", 1]], 5], env);
-  assert.equal(fnTwoArgs, 6, "Evaluated anonymous function (one arg).");
+  var anonFnTwoArgs = Lisp.eval([["fn", ["x"] ["+", "x", 1]], 5], env);
+  assert.equal(anonFnTwoArgs, 6, "Evaluated anonymous function (one arg).");
 });
