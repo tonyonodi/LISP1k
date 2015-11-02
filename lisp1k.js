@@ -142,7 +142,7 @@ var Lisp = (function() {
   }
 
 
-  self.defaultEnv = {
+  var defaultEnv = {
     "true": true,
     "false": false,
     "nil": null,
@@ -240,6 +240,12 @@ var Lisp = (function() {
       delayArgEvaluation: true
     }
   }
+
+  Object.defineProperty(self, "defaultEnv", {
+      get: function() {
+        return defaultEnv;
+      }
+  });
 
   return self;
 })();

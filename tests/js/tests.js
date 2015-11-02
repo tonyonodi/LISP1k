@@ -33,60 +33,60 @@ QUnit.test("Lisp.parse tests.", function(assert) {
 });
 
 QUnit.test("Lisp.prototype.eval tests.", function(assert) {
-  var lispInstance = new Lisp();
+  var env = Lisp.defaultEnv;
 
   // atomic number
-  var atomicNumber = lispInstance.eval(5);
+  var atomicNumber = Lisp.eval(5, env);
   assert.equal(atomicNumber, 5, "Evaluated atomic expression (number).");
 
   // atomic number
-  var atomicBool = lispInstance.eval(true);
+  var atomicBool = Lisp.eval(true, env);
   assert.equal(atomicBool, true, "Evaluated atomic expression (boolean).");
 
-  var nestedExpressionResult = lispInstance.eval(["*", ["+", 3, 3], ["+", 3, 3]]);
+  var nestedExpressionResult = Lisp.eval(["*", ["+", 3, 3], ["+", 3, 3]], env);
   assert.equal(nestedExpressionResult, 36, "Nesting expressions works.");
 });
 
 
 QUnit.test("Primitive function tests.", function() {
-  var lispInstance = new Lisp();
+  var env = Lisp.defaultEnv;
 
-  var additionResult = lispInstance.eval(["+", 3, 4]);
+  var additionResult = Lisp.eval(["+", 3, 4], env);
   assert.equal(additionResult, 7, "Addition works.");
 
-  var additionResult = lispInstance.eval(["-", 8, 2]);
+  var additionResult = Lisp.eval(["-", 8, 2], env);
   assert.equal(additionResult, 6, "Subtraction works.");
 
-  var multiplicationResult = lispInstance.eval(["*", 2, 3]);
+  var multiplicationResult = Lisp.eval(["*", 2, 3], env);
   assert.equal(multiplicationResult, 6, "Multiplication works.");
 
-  var divisionResult = lispInstance.eval(["/", 15, 3]);
+  var divisionResult = Lisp.eval(["/", 15, 3], env);
   assert.equal(divisionResult, 5, "Division works.");
 
-  var falseEqualitynResult = lispInstance.eval(["=", 1, 2]);
+  var falseEqualitynResult = Lisp.eval(["=", 1, 2], env);
   assert.equal(falseEqualitynResult, false, "Equality returned false.");
 
-  var trueEqualitynResult = lispInstance.eval(["=", 1, 1]);
+  var trueEqualitynResult = Lisp.eval(["=", 1, 1], env);
   assert.equal(trueEqualitynResult, true, "Equality returned true.");
 
-  var ifTrueResult = lispInstance.eval(["if", true, 1, 2]);
+  var ifTrueResult = Lisp.eval(["if", true, 1, 2], env);
   assert.equal(ifTrueResult, 1, "If true works.");
 
-  var ifFalseResult = lispInstance.eval(["if", false, 1, 2]);
+  var ifFalseResult = Lisp.eval(["if", false, 1, 2], env);
   assert.equal(ifTrueResult, 1, "If false works.");
 
-  var defReturnValue = lispInstance.eval([def, "x", 5]);
+  var defReturnValue = Lisp.eval([def, "x", 5], env);
   assert.equal(defReturnValue, 5, "Def returns assigned value");
 
-  var savedVar = lispInstance.eval("x");
+  var savedVar = Lisp.eval("x", env);
   assert.equal(savedVar, 5, "Saving variables works.");
 
-  var fnNoArgs = lispInstance.eval([["fn", [], 5]]);
+  var fnNoArgs = Lisp.eval([["fn", [], 5]], env);
   assert.equal(fnNoArgs, 5, "Evaluated anonymous function (no args)");
 
-  var fnOneArg = lispInstance.eval([["fn", ["x"] ["+", "x", 1]], 5]);
+  var fnOneArg = Lisp.eval([["fn", ["x"] ["+", "x", 1]], 5], env);
   assert.equal(fnOneArg, 6, "Evaluated anonymous function (one arg).");
 
-  var fnTwoArgs = lispInstance.eval([["fn", ["x"] ["+", "x", 1]], 5]);
+  var fnTwoArgs = Lisp.eval([["fn", ["x"] ["+", "x", 1]], 5], env);
   assert.equal(fnTwoArgs, 6, "Evaluated anonymous function (one arg).");
 });
