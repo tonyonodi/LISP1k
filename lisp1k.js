@@ -64,6 +64,7 @@ var Lisp = (function() {
     var newFuncEnv;
 
     newFuncEnv = Object.create(env);
+    func.args;
 
     // append the arguments to the function's environment
     func.args.forEach(function(argName, i) {
