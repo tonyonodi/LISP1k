@@ -1,5 +1,5 @@
 "use strict";
-
+var count = 0;
 var Lisp = (function() {
   var self = Object.create(null);
 
@@ -65,7 +65,6 @@ var Lisp = (function() {
 
     newFuncEnv = Object.create(env);
     func.args;
-
     // append the arguments to the function's environment
     func.args.forEach(function(argName, i) {
       newFuncEnv[argName] = args[i];
@@ -122,7 +121,19 @@ var Lisp = (function() {
     }
   }
 
-  self.repl = function(parentElement) {
+  self.parseEval = function(code, env) {
+    var tokens,
+      ast,
+      evaluated;
+
+    tokens = self.lex(code);
+    ast = self.parse(tokens);
+    evaluated = self.eval(ast, env);
+
+    return evaluated;
+  }
+
+  self.repl = function(parentElement, env) {
     var lastListItem,
       form,
       repl;
@@ -154,7 +165,6 @@ var Lisp = (function() {
       inputElement.val("");
     });
   }
-
 
   var defaultEnv = {
     "true": true,

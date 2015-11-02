@@ -90,3 +90,15 @@ QUnit.test("Primitive function tests.", function(assert) {
   var anonFnTwoArgs = Lisp.eval([["fn", ["x"], ["+", "x", 1]], 5], env);
   assert.equal(anonFnTwoArgs, 6, "Evaluated anonymous function (one arg).");
 });
+
+QUnit.test("Test recursion.", function(assert) {
+  var env = Lisp.defaultEnv;
+
+  // create recursive function
+  var defineFactorial = "(def factorial (fn (n) (if (= n 0) 1 (* n (factorial (- n 1))))))";
+  Lisp.parseEval(defineFactorial, env);
+
+  // run recursive function
+  var fiveFactorialResult = Lisp.parseEval("(factorial 5)", env);
+  assert.equal(fiveFactorialResult, 120, "Able to recursively call function.");
+});
