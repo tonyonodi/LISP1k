@@ -214,10 +214,10 @@ var Lisp = (function() {
         condition = input[0];
         trueExpression = input[1];
         falseExpression = input[2];
-        evaluatedCondition = self.eval(condition, that);
+        evaluatedCondition = self.eval(condition, env);
         conditionIsFalsey = ((evaluatedCondition === false) || (evaluatedCondition === null));
-        returnValue = conditionIsFalsey ? self.eval(falseExpression, that) :
-                                          self.eval(trueExpression, that);
+        returnValue = conditionIsFalsey ? self.eval(falseExpression, env) :
+                                          self.eval(trueExpression, env);
 
         return returnValue;
       },

@@ -75,7 +75,7 @@ QUnit.test("Primitive function tests.", function(assert) {
   var ifFalseResult = Lisp.eval(["if", false, 1, 2], env);
   assert.equal(ifTrueResult, 1, "If false works.");
 
-  var defReturnValue = Lisp.eval([def, "x", 5], env);
+  var defReturnValue = Lisp.eval(["def", "x", 5], env);
   assert.equal(defReturnValue, 5, "Def returns assigned value");
 
   var savedVar = Lisp.eval("x", env);
