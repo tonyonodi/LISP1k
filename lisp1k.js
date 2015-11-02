@@ -56,7 +56,7 @@ var Lisp = (function() {
       return funcBody(args, env);
     } else {
       appliedArgs = self.apply(args, env)
-      return funcBody(appliedArgs);
+      return funcBody(appliedArgs, env);
     }
   }
 
@@ -96,7 +96,7 @@ var Lisp = (function() {
       fnObject = env[fnName];
 
       if (fnObject.isPrimitive === true) {
-          return primitiveFuncEval(fnObject, args, env);
+        return primitiveFuncEval(fnObject, args, env);
       } else if (fnObject.isPrimitive === false) {
         // use apply on args as there is no reason to delay
         // application for args in non-primitive functions
@@ -196,8 +196,8 @@ var Lisp = (function() {
       delayArgEvaluation: false
     },
     "def": {
-      body: function(input) {
-        return that[input[0]] = input[1];
+      body: function(input, env) {
+        return env[input[0]] = input[1];
       },
       isPrimitive: true,
       delayArgEvaluation: false
