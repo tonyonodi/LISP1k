@@ -48,7 +48,7 @@ QUnit.test("Lisp.prototype.eval tests.", function(assert) {
 });
 
 
-QUnit.test("Primitive function tests.", function() {
+QUnit.test("Primitive function tests.", function(assert) {
   var env = Lisp.defaultEnv;
 
   var additionResult = Lisp.eval(["+", 3, 4], env);

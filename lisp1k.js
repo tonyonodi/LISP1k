@@ -170,18 +170,16 @@ var Lisp = (function() {
       body: function(input) {
         return input.reduce(function(prev, curr) {
           return prev * curr;
-        }, 0);
+        });
       },
       isPrimitive: true,
       delayArgEvaluation: false
     },
     "/": {
       body: function(input) {
-        var first;
-        first = input.shift();
         return input.reduce(function(prev, curr) {
           return prev / curr;
-        }, first);
+        });
       },
       isPrimitive: true,
       delayArgEvaluation: false
