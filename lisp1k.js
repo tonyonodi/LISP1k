@@ -137,7 +137,6 @@ var Lisp = (function() {
       return e;
     }
     evaluated = self.eval(ast, env);
-    console.log(evaluated);
     return evaluated;
   }
 
@@ -157,9 +156,8 @@ var Lisp = (function() {
     form.submit(function(event) {
       var inputElement,
         submitted,
-        lexed,
-        parsed,
-        evaluated;
+        evaluated,
+        replListElement;
 
       event.preventDefault();
       inputElement = $(event.target).find("input");
@@ -169,6 +167,9 @@ var Lisp = (function() {
       $("<li class=\"input\">" + submitted + "</li>").insertBefore(lastListItem);
       $("<li class=\"output\">" + evaluated + "</li>").insertBefore(lastListItem);
       inputElement.val("");
+      // scroll to the bottom
+      replListElement = $("#lisp-repl")
+      replListElement.scrollTop(replListElement[0].scrollHeight);
     });
   }
 
