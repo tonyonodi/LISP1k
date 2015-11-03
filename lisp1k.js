@@ -14,7 +14,11 @@ var Lisp = (function() {
 
   self.parse = function(tokens) {
     var token,
-        tokenAsNumber;
+      tokenAsNumber;
+
+    if (tokens.length === 0) {
+      throw "Syntax error: unexpected end of input."
+    }
     // remove first token and save
     token = tokens.shift();
 
@@ -133,7 +137,7 @@ var Lisp = (function() {
     return evaluated;
   }
 
-  self.repl = function(parentElement, env) {
+  self.repl = function(parentElement) {
     var lastListItem,
       form,
       repl;

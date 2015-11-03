@@ -30,6 +30,11 @@ QUnit.test("Lisp.parse tests.", function(assert) {
 
   var nestedList = Lisp.parse(Lisp.lex("(+ (* 3 4) (/ 5 6))"));
   assert.deepEqual(nestedList, ["+", ["*", 3, 4], ["/", 5, 6]], "Parsed a nested list.");
+
+  assert.throws(function() {
+    Lisp.parse(Lisp.lex("(+ (* 3 4 (- 2 5))"));
+  }, /syntax error/i,
+  "Threw error for incorrectly matched parens.")
 });
 
 QUnit.test("Lisp.prototype.eval tests.", function(assert) {
