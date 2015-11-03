@@ -125,15 +125,19 @@ var Lisp = (function() {
     }
   }
 
-  self.parseEval = function(code, env) {
+  self.run = function(code, env) {
     var tokens,
       ast,
       evaluated;
 
     tokens = self.lex(code);
-    ast = self.parse(tokens);
+    try {
+      ast = self.parse(tokens);
+    } catch (e) {
+      return e;
+    }
     evaluated = self.eval(ast, env);
-
+    console.log(evaluated);
     return evaluated;
   }
 
@@ -161,9 +165,7 @@ var Lisp = (function() {
       inputElement = $(event.target).find("input");
       submitted = inputElement.val();
 
-      lexed = self.lex(submitted);
-      parsed = self.parse(lexed);
-      evaluated = self.eval(parsed, repl.env);
+      evaluated = self.run(submitted, repl.env);
       $("<li class=\"input\">" + submitted + "</li>").insertBefore(lastListItem);
       $("<li class=\"output\">" + evaluated + "</li>").insertBefore(lastListItem);
       inputElement.val("");
