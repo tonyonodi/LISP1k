@@ -53,7 +53,7 @@ QUnit.test("Lisp.prototype.eval tests.", function(assert) {
 });
 
 
-QUnit.test("Primitive function tests.", function(assert) {
+QUnit.test("Primitive function tests: arithmetic.", function(assert) {
   var env = Lisp.defaultEnv;
 
   var additionResult = Lisp.eval(["+", 3, 4], env);
@@ -67,6 +67,10 @@ QUnit.test("Primitive function tests.", function(assert) {
 
   var divisionResult = Lisp.eval(["/", 15, 3], env);
   assert.equal(divisionResult, 5, "Division works.");
+});
+
+QUnit.test("Primitive function tests: comparison.", function(assert) {
+  var env = Lisp.defaultEnv;
 
   var falseEqualitynResult = Lisp.eval(["=", 1, 2], env);
   assert.equal(falseEqualitynResult, false, "Equality returned false.");
@@ -103,18 +107,30 @@ QUnit.test("Primitive function tests.", function(assert) {
 
   var trueEqualitynResult = Lisp.eval([">", 4, 3, 3, 5], env);
   assert.equal(trueEqualitynResult, false, "Greater than false, many values.");
+});
+
+QUnit.test("Primitive function tests: conditionals.", function(assert) {
+  var env = Lisp.defaultEnv;
 
   var ifTrueResult = Lisp.eval(["if", true, 1, 2], env);
   assert.equal(ifTrueResult, 1, "If true works.");
 
   var ifFalseResult = Lisp.eval(["if", false, 1, 2], env);
   assert.equal(ifTrueResult, 1, "If false works.");
+});
+
+QUnit.test("Primitive function tests: assignment.", function(assert) {
+  var env = Lisp.defaultEnv;
 
   var defReturnValue = Lisp.eval(["def", "x", 5], env);
   assert.equal(defReturnValue, 5, "Def returns assigned value");
 
   var savedVar = Lisp.eval("x", env);
   assert.equal(savedVar, 5, "Saving variables works.");
+});
+
+QUnit.test("Primitive function tests: functions.", function(assert) {
+  var env = Lisp.defaultEnv;
 
   var anonFnNoArgs = Lisp.eval([["fn", [], 5]], env);
   assert.equal(anonFnNoArgs, 5, "Evaluated anonymous function (no args)");
