@@ -74,6 +74,36 @@ QUnit.test("Primitive function tests.", function(assert) {
   var trueEqualitynResult = Lisp.eval(["=", 1, 1], env);
   assert.equal(trueEqualitynResult, true, "Equality returned true.");
 
+  var trueEqualitynResult = Lisp.eval(["<", 1, 1], env);
+  assert.equal(trueEqualitynResult, false, "Less than false for equal values.");
+
+  var trueEqualitynResult = Lisp.eval(["<", 1, 2], env);
+  assert.equal(trueEqualitynResult, true, "Less than true.");
+
+  var trueEqualitynResult = Lisp.eval(["<", 1, 2, 3, 4], env);
+  assert.equal(trueEqualitynResult, true, "Less than true, many values.");
+
+  var trueEqualitynResult = Lisp.eval(["<", 1, 2, 3, 0], env);
+  assert.equal(trueEqualitynResult, false, "Less than false, many values.");
+
+  var trueEqualitynResult = Lisp.eval(["<", 3, 2], env);
+  assert.equal(trueEqualitynResult, false, "Less than false.");
+
+  var trueEqualitynResult = Lisp.eval([">", 1, 1], env);
+  assert.equal(trueEqualitynResult, false, "Greater than false for equal values.");
+
+  var trueEqualitynResult = Lisp.eval([">", 1, 2], env);
+  assert.equal(trueEqualitynResult, false, "Greater than false.");
+
+  var trueEqualitynResult = Lisp.eval([">", 3, 2], env);
+  assert.equal(trueEqualitynResult, true, "Greater than true.");
+
+  var trueEqualitynResult = Lisp.eval([">", 4, 3, 3, 1], env);
+  assert.equal(trueEqualitynResult, true, "Greater than true, many values.");
+
+  var trueEqualitynResult = Lisp.eval([">", 4, 3, 3, 5], env);
+  assert.equal(trueEqualitynResult, false, "Greater than false, many values.");
+
   var ifTrueResult = Lisp.eval(["if", true, 1, 2], env);
   assert.equal(ifTrueResult, 1, "If true works.");
 

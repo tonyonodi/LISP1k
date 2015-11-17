@@ -226,6 +226,28 @@ var Lisp = (function() {
       isPrimitive: true,
       delayArgEvaluation: false
     },
+    "<": {
+      body: function(input) {
+        var first;
+          first = input.shift();
+        return input.every(function(value) {
+          return first < value;
+        });
+      },
+      isPrimitive: true,
+      delayArgEvaluation: false
+    },
+    ">": {
+      body: function(input) {
+        var first;
+          first = input.shift();
+        return input.every(function(value) {
+          return first > value;
+        });
+      },
+      isPrimitive: true,
+      delayArgEvaluation: false
+    },
     "def": {
       body: function(input, env) {
         return env[input[0]] = input[1];
