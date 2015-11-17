@@ -101,9 +101,9 @@ QUnit.test("Test recursion.", function(assert) {
 
   // create recursive function
   var defineFactorial = "(def factorial (fn (n) (if (= n 0) 1 (* n (factorial (- n 1))))))";
-  Lisp.parseEval(defineFactorial, env);
+  Lisp.run(defineFactorial, env);
 
   // run recursive function
-  var fiveFactorialResult = Lisp.parseEval("(factorial 5)", env);
+  var fiveFactorialResult = Lisp.run("(factorial 5)", env);
   assert.equal(fiveFactorialResult, 120, "Able to recursively call function.");
 });
