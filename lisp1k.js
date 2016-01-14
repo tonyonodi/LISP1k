@@ -4,8 +4,7 @@ var Lisp = (function() {
   var self = Object.create(null);
 
   self.lex = function(string) {
-    return string.replace(/\(/g, " ( ")
-                 .replace(/\)/g, " ) ")
+    return string.replace(/\(|\)/g, " $& ")
                  .split(/\s/)
                  .filter(function(token) {
                     return token !== "";
